@@ -1,9 +1,7 @@
-namespace BarberBooking.Domain.Entities;
+namespace BarberBooking.Application.DTOs.Appointments;
 
-public class Appointment
+public class UpdateAppointmentDto
 {
-    public int Id { get; set; }
-
     public string CustomerName { get; set; } = string.Empty;
 
     public string CustomerPhone { get; set; } = string.Empty;
@@ -12,5 +10,5 @@ public class Appointment
 
     public DateTime AppointmentTime { get; set; }
 
-    public string Status { get; set; } = "Pending";
+    public string Status { get; set; } = string.Empty;
 }
