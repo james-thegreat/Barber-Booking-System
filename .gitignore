@@ -1,0 +1,22 @@
+# .NET
+bin/
+obj/
+
+# Visual Studio
+.vs/
+.vscode/
+
+# Databases
+*.db
+*.sqlite
+
+# React / Node
+node_modules/
+dist/
+build/
+
+# Environment files
+.env
+
+# Mac
+.DS_Store
