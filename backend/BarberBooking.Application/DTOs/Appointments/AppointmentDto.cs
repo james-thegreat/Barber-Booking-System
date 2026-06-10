@@ -1,6 +1,6 @@
-namespace BarberBooking.Domain.Entities;
+namespace BarberBooking.Application.DTOs.Appointments;
 
-public class Appointment
+public class AppointmentDto
 {
     public int Id { get; set; }
 
@@ -10,11 +10,13 @@ public class Appointment
 
     public DateTime AppointmentTime { get; set; }
 
-    public string Status { get; set; } = "Pending";
+    public string Status { get; set; } = string.Empty;
 
     public int BarberId { get; set; }
-    public Barber? Barber { get; set; }
-    
+
+    public string? BarberName { get; set; }
+
     public int ServiceId { get; set; }
-    public Service? Service { get; set; }
+
+    public string? ServiceName { get; set; }
 }

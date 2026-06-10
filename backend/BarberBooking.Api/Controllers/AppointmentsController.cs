@@ -17,34 +17,83 @@ public class AppointmentsController : ControllerBase
         _context = context;
     }
 
+
     [HttpGet]
-    public async Task<ActionResult<List<Appointment>>> GetAppointments()
+    public async Task<ActionResult<List<AppointmentDto>>> GetAppointments()
     {
-        return await _context.Appointments.ToListAsync();
+        var appointments = await _context.Appointments
+            .Include(a => a.Barber)
+            .Include(a => a.Service)
+            .Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                CustomerName = a.CustomerName,
+                CustomerPhone = a.CustomerPhone,
+                AppointmentTime = a.AppointmentTime,
+                Status = a.Status,
+                BarberId = a.BarberId,
+                BarberName = a.Barber != null ? a.Barber.DisplayName : null,
+                ServiceId = a.ServiceId,
+                ServiceName = a.Service != null ? a.Service.Name : null
+            })
+            .ToListAsync();
+
+        return Ok(appointments);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Appointment>> GetAppointment(int id)
+    public async Task<ActionResult<AppointmentDto>> GetAppointment(int id)
     {
-        var appointment = await _context.Appointments.FindAsync(id);
+        var appointment = await _context.Appointments
+            .Include(a => a.Barber)
+            .Include(a => a.Service)
+            .Where(a => a.Id == id)
+            .Select(a => new AppointmentDto
+            {
+                Id = a.Id,
+                CustomerName = a.CustomerName,
+                CustomerPhone = a.CustomerPhone,
+                AppointmentTime = a.AppointmentTime,
+                Status = a.Status,
+                BarberId = a.BarberId,
+                BarberName = a.Barber != null ? a.Barber.DisplayName : null,
+                ServiceId = a.ServiceId,
+                ServiceName = a.Service != null ? a.Service.Name : null
+            })
+            .FirstOrDefaultAsync();
 
         if (appointment is null)
         {
             return NotFound();
         }
 
-        return appointment;
+        return Ok(appointment);
     }
 
     [HttpPost]
     public async Task<ActionResult<Appointment>> CreateAppointment(CreateAppointmentDto dto)
     {
+        var barberExists = await _context.Barbers.AnyAsync(b => b.Id == dto.BarberId);
+
+        if (!barberExists)
+        {
+            return BadRequest("Invalid BarberId. Barber does not exist.");
+        }
+
+        var serviceExists = await _context.Services.AnyAsync(s => s.Id == dto.ServiceId);
+
+        if (!serviceExists)
+        {
+            return BadRequest("Invalid ServiceId. Service does not exist.");
+        }
+
         var appointment = new Appointment
         {
             CustomerName = dto.CustomerName,
             CustomerPhone = dto.CustomerPhone,
-            ServiceName = dto.ServiceName,
             AppointmentTime = dto.AppointmentTime,
+            BarberId = dto.BarberId,
+            ServiceId = dto.ServiceId,
             Status = "Pending"
         };
 
@@ -63,6 +112,20 @@ public class AppointmentsController : ControllerBase
         int id,
         UpdateAppointmentDto dto)
     {
+        var barberExists = await _context.Barbers.AnyAsync(b => b.Id == dto.BarberId);
+
+        if (!barberExists)
+        {
+            return BadRequest("Invalid BarberId. Barber does not exist.");
+        }
+
+        var serviceExists = await _context.Services.AnyAsync(s => s.Id == dto.ServiceId);
+
+        if (!serviceExists)
+        {
+            return BadRequest("Invalid ServiceId. Service does not exist.");
+        }
+
         var appointment = await _context.Appointments.FindAsync(id);
 
         if (appointment is null)
@@ -72,9 +135,10 @@ public class AppointmentsController : ControllerBase
 
         appointment.CustomerName = dto.CustomerName;
         appointment.CustomerPhone = dto.CustomerPhone;
-        appointment.ServiceName = dto.ServiceName;
         appointment.AppointmentTime = dto.AppointmentTime;
         appointment.Status = dto.Status;
+        appointment.BarberId = dto.BarberId;
+        appointment.ServiceId = dto.ServiceId;
 
         await _context.SaveChangesAsync();
 

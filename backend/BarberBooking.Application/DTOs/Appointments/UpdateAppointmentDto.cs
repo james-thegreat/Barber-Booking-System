@@ -6,9 +6,9 @@ public class UpdateAppointmentDto
 
     public string CustomerPhone { get; set; } = string.Empty;
 
-    public string ServiceName { get; set; } = string.Empty;
-
     public DateTime AppointmentTime { get; set; }
 
     public string Status { get; set; } = string.Empty;
+    public int BarberId { get; set; }
+    public int ServiceId { get; set; }
 }
