@@ -10,9 +10,10 @@ public class CreateAppointmentDto
 
     [Required]
     public string CustomerPhone { get; set; } = string.Empty;
-
     [Required]
-    public DateTime AppointmentTime { get; set; }
+    public DateTime StartTime { get; set; }
+    [Required]
+    public DateTime EndTime { get; set; }
     [Required]
     public int BarberId { get; set; }
     [Required]

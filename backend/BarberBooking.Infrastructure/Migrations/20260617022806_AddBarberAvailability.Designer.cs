@@ -3,6 +3,7 @@ using System;
 using BarberBooking.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(BarberDbContext))]
-    partial class BarberDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260617022806_AddBarberAvailability")]
+    partial class AddBarberAvailability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
@@ -22,6 +25,9 @@ namespace BarberBooking.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AppointmentTime")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("BarberId")
                         .HasColumnType("INTEGER");
@@ -34,14 +40,8 @@ namespace BarberBooking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ServiceId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -115,41 +115,7 @@ namespace BarberBooking.Infrastructure.Migrations
 
                     b.HasIndex("BarberId");
 
-                    b.ToTable("BarberAvailabilities");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BarberId = 1,
-                            DayOfWeek = 1,
-                            EndTime = new TimeSpan(0, 17, 0, 0, 0),
-                            StartTime = new TimeSpan(0, 9, 0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BarberId = 1,
-                            DayOfWeek = 2,
-                            EndTime = new TimeSpan(0, 17, 0, 0, 0),
-                            StartTime = new TimeSpan(0, 9, 0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BarberId = 2,
-                            DayOfWeek = 1,
-                            EndTime = new TimeSpan(0, 18, 0, 0, 0),
-                            StartTime = new TimeSpan(0, 10, 0, 0, 0)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BarberId = 2,
-                            DayOfWeek = 2,
-                            EndTime = new TimeSpan(0, 18, 0, 0, 0),
-                            StartTime = new TimeSpan(0, 10, 0, 0, 0)
-                        });
+                    b.ToTable("BarberAvailabilitys");
                 });
 
             modelBuilder.Entity("BarberBooking.Domain.Entities.Service", b =>

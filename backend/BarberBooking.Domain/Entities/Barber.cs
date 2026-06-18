@@ -10,5 +10,6 @@ public class Barber
 
     public bool IsActive { get; set; } = true;
 
-    public List<Appointment> Appointments { get; set; } = new();
+    public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
+    public ICollection<BarberAvailability> Availabilities { get; set; } = new List<BarberAvailability>();
 }

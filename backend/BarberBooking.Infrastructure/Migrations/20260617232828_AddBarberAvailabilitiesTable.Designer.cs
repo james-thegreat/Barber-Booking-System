@@ -3,6 +3,7 @@ using System;
 using BarberBooking.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(BarberDbContext))]
-    partial class BarberDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260617232828_AddBarberAvailabilitiesTable")]
+    partial class AddBarberAvailabilitiesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
@@ -22,6 +25,9 @@ namespace BarberBooking.Infrastructure.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("AppointmentTime")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("BarberId")
                         .HasColumnType("INTEGER");
@@ -34,14 +40,8 @@ namespace BarberBooking.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("ServiceId")
                         .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
                         .IsRequired()

@@ -29,7 +29,8 @@ public class AppointmentsController : ControllerBase
                 Id = a.Id,
                 CustomerName = a.CustomerName,
                 CustomerPhone = a.CustomerPhone,
-                AppointmentTime = a.AppointmentTime,
+                StartTime = a.StartTime,
+                EndTime = a.EndTime,
                 Status = a.Status,
                 BarberId = a.BarberId,
                 BarberName = a.Barber != null ? a.Barber.DisplayName : null,
@@ -53,7 +54,8 @@ public class AppointmentsController : ControllerBase
                 Id = a.Id,
                 CustomerName = a.CustomerName,
                 CustomerPhone = a.CustomerPhone,
-                AppointmentTime = a.AppointmentTime,
+                StartTime = a.StartTime,
+                EndTime = a.EndTime,
                 Status = a.Status,
                 BarberId = a.BarberId,
                 BarberName = a.Barber != null ? a.Barber.DisplayName : null,
@@ -87,11 +89,37 @@ public class AppointmentsController : ControllerBase
             return BadRequest("Invalid ServiceId. Service does not exist.");
         }
 
+        if (dto.StartTime >= dto.EndTime)
+        {
+            return BadRequest("Start time must be before end time.");
+        }
+
+        var isWithinAvailability = await IsWithinBarberAvailability(
+            dto.BarberId,
+            dto.StartTime,
+            dto.EndTime);
+
+        if (!isWithinAvailability)
+        {
+            return BadRequest("Appointment time is outside the barber's available working hours.");
+        }
+
+        var hasOverlap = await HasOverlappingAppointment(
+            dto.BarberId,
+            dto.StartTime,
+            dto.EndTime);
+
+        if (hasOverlap)
+        {
+            return BadRequest("This barber already has an appointment during that time.");
+        }
+
         var appointment = new Appointment
         {
             CustomerName = dto.CustomerName,
             CustomerPhone = dto.CustomerPhone,
-            AppointmentTime = dto.AppointmentTime,
+            StartTime = dto.StartTime,
+            EndTime = dto.EndTime,
             BarberId = dto.BarberId,
             ServiceId = dto.ServiceId,
             Status = "Pending"
@@ -133,9 +161,36 @@ public class AppointmentsController : ControllerBase
             return NotFound();
         }
 
+        if (dto.StartTime >= dto.EndTime)
+        {
+            return BadRequest("Start time must be before end time.");
+        }
+
+        var isWithinAvailability = await IsWithinBarberAvailability(
+            dto.BarberId,
+            dto.StartTime,
+            dto.EndTime);
+
+        if (!isWithinAvailability)
+        {
+            return BadRequest("Appointment time is outside the barber's available working hours.");
+        }
+
+        var hasOverlap = await HasOverlappingAppointment(
+            dto.BarberId,
+            dto.StartTime,
+            dto.EndTime,
+            id);
+
+        if (hasOverlap)
+        {
+            return BadRequest("This barber already has an appointment during that time.");
+        }
+
         appointment.CustomerName = dto.CustomerName;
         appointment.CustomerPhone = dto.CustomerPhone;
-        appointment.AppointmentTime = dto.AppointmentTime;
+        appointment.StartTime = dto.StartTime;
+        appointment.EndTime = dto.EndTime;
         appointment.Status = dto.Status;
         appointment.BarberId = dto.BarberId;
         appointment.ServiceId = dto.ServiceId;
@@ -160,5 +215,38 @@ public class AppointmentsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    private async Task<bool> IsWithinBarberAvailability(
+        int barberId,
+        DateTime startTime,
+        DateTime endTime)
+    {
+        var appointmentDay = startTime.DayOfWeek;
+        var appointmentStartTime = startTime.TimeOfDay;
+        var appointmentEndTime = endTime.TimeOfDay;
+
+        var barberAvailabilities = await _context.BarberAvailabilities
+            .Where(a =>
+                a.BarberId == barberId &&
+                a.DayOfWeek == appointmentDay)
+            .ToListAsync();
+
+        return barberAvailabilities.Any(a =>
+            a.StartTime <= appointmentStartTime &&
+            a.EndTime >= appointmentEndTime);
+    }
+
+    private async Task<bool> HasOverlappingAppointment(
+        int barberId,
+        DateTime startTime,
+        DateTime endTime,
+        int? appointmentIdToIgnore = null)
+    {
+        return await _context.Appointments.AnyAsync(a =>
+            a.BarberId == barberId &&
+            (!appointmentIdToIgnore.HasValue || a.Id != appointmentIdToIgnore.Value) &&
+            startTime < a.EndTime &&
+            endTime > a.StartTime);
     }
 }
