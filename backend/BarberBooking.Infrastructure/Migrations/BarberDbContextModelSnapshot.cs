@@ -15,7 +15,7 @@ namespace BarberBooking.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.10");
 
             modelBuilder.Entity("BarberBooking.Domain.Entities.Appointment", b =>
                 {
