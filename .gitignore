@@ -2,13 +2,19 @@
 bin/
 obj/
 
-# Visual Studio
+# Visual Studio / VS Code
 .vs/
 .vscode/
 
 # Databases
 *.db
 *.sqlite
+
+# SQLite runtime files
+*.db-shm
+*.db-wal
+*.sqlite-shm
+*.sqlite-wal
 
 # React / Node
 node_modules/

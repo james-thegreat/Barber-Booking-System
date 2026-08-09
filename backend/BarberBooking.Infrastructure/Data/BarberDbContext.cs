@@ -13,7 +13,8 @@ public class BarberDbContext : DbContext
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Service> Services { get; set; }
     public DbSet<Barber> Barbers { get; set; }
-public DbSet<BarberAvailability> BarberAvailabilities { get; set; }
+    public DbSet<BarberAvailability> BarberAvailabilities { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +45,26 @@ public DbSet<BarberAvailability> BarberAvailabilities { get; set; }
             new Service { Id = 2, Name = "Skin Fade", Description = "Fresh skin fade", DurationMinutes = 45, Price = 45, IsActive = true },
             new Service { Id = 3, Name = "Beard Trim", Description = "Beard shaping and tidy up", DurationMinutes = 20, Price = 20, IsActive = true }
         );
+
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasIndex(u => u.Email)
+                .IsUnique();
+
+            entity.Property(u => u.FullName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(u => u.Email)
+                .IsRequired()
+                .HasMaxLength(255);
+
+            entity.Property(u => u.PasswordHash)
+                .IsRequired();
+
+            entity.Property(u => u.Role)
+                .IsRequired();
+        });
 
     modelBuilder.Entity<BarberAvailability>().HasData(
         new BarberAvailability
