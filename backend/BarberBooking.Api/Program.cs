@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BarberBooking.Infrastructure.Data;
+using BarberBooking.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddDbContext<BarberDbContext>(options =>
     options.UseSqlite("Data Source=barberbooking.db"));
