@@ -24,6 +24,8 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterRequestDto request)
     {
         var normalizedEmail = request.Email.Trim().ToLower();
@@ -61,6 +63,8 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<AuthResponseDto>> Login(LoginRequestDto request)
     {
         var normalizedEmail = request.Email.Trim().ToLower();
